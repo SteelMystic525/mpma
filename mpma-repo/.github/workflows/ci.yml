@@ -1,0 +1,100 @@
+name: Simulation CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+    paths:
+      - 'rtl/**'
+      - 'tb/**'
+      - 'sim/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'rtl/**'
+      - 'tb/**'
+      - 'sim/**'
+
+jobs:
+  iverilog-sim:
+    name: Icarus Verilog — Behavioral Simulation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Icarus Verilog
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y iverilog
+
+      - name: Show tool version
+        run: iverilog -V
+
+      - name: Create output directory
+        run: mkdir -p sim/out
+
+      - name: Compile RTL + testbench
+        run: |
+          iverilog -g2001 -Wall \
+            -o sim/out/mpma_sim \
+            rtl/bram_ctrl.v \
+            rtl/config_registers.v \
+            rtl/performance_monitor.v \
+            rtl/port_if_enhanced.v \
+            rtl/scheduler_qos.v \
+            rtl/memory_system_top.v \
+            tb/tb_memory_system.v
+
+      - name: Run simulation
+        run: |
+          cd sim/out
+          vvp mpma_sim | tee sim_log.txt
+          # Fail the job if any ERROR line appears in output
+          if grep -qi "^ERROR" sim_log.txt; then
+            echo "::error::Simulation reported errors. See log above."
+            exit 1
+          fi
+          echo "Simulation passed."
+
+      - name: Upload simulation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulation-log
+          path: sim/out/sim_log.txt
+
+      - name: Upload waveform (VCD)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: waveform-vcd
+          path: "*.vcd"
+          if-no-files-found: ignore
+
+  verilator-lint:
+    name: Verilator — Lint Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Verilator
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y verilator
+
+      - name: Show tool version
+        run: verilator --version
+
+      - name: Lint RTL (top-level)
+        run: |
+          verilator --lint-only -Wall --timing \
+            --top-module memory_system_top \
+            rtl/bram_ctrl.v \
+            rtl/config_registers.v \
+            rtl/performance_monitor.v \
+            rtl/port_if_enhanced.v \
+            rtl/scheduler_qos.v \
+            rtl/memory_system_top.v

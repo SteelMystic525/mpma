@@ -1,0 +1,77 @@
+# =============================================================================
+# .gitignore — MPMA GitHub Repository
+# =============================================================================
+
+# ----- Vivado project files (generated, do not track) ----------------------
+*.jou
+*.log
+*.str
+*.pb
+*.xpr.bak
+vivado_out/
+*.dcp
+*.bit
+*.ltx
+*.mmi
+*.rpt
+*.xml
+*.wpc
+*.wdf
+*.wcfg
+*.xpe
+*.rpx
+.Xil/
+.cache/
+NA/
+usage_statistics_webtalk.html
+webtalk*.xml
+webtalk*.jou
+
+# Vivado IP cache and generated outputs
+*.gen/
+*.cache/
+*.hw/
+*.ip_user_files/
+*.sim/
+*.runs/
+ip_repo/
+
+# ----- Simulation outputs ---------------------------------------------------
+sim/out/
+*.vcd
+*.fst
+*.ghw
+*.lxt
+*.vzt
+*.evcd
+
+# ----- Icarus Verilog compiled objects --------------------------------------
+*.vvp
+
+# ----- GTKWave save files ---------------------------------------------------
+*.gtkw
+*.sav
+
+# ----- Modelsim / Questa ----------------------------------------------------
+work/
+transcript
+vsim.wlf
+*.ucdb
+
+# ----- OS and editor files --------------------------------------------------
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ----- Python (if any scripts added) ----------------------------------------
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
