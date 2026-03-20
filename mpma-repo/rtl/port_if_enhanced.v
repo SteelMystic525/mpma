@@ -34,7 +34,7 @@ module port_if_enhanced
     input  req_ready
 );
 
-    // FIFO storage - use generate for arrays
+    // FIFO storage - use generate for arrays (smart move)
     reg [ADDR_W-1:0] fifo_addr_0, fifo_addr_1, fifo_addr_2, fifo_addr_3;
     reg [ADDR_W-1:0] fifo_addr_4, fifo_addr_5, fifo_addr_6, fifo_addr_7;
     
